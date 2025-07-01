@@ -1,4 +1,4 @@
-package com.wandoo.demo;
+package com.dambap;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
