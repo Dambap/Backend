@@ -90,8 +90,21 @@ jobs:
             echo "${{ secrets.DOCKER_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             sudo docker ps
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:${{env.IMAGE_TAG}}
-            if [ $(sudo docker ps -q) ]; then sudo docker stop $(sudo docker ps -q); fi
-            if [ $(sudo docker ps -aq) ]; then sudo docker rm $(sudo docker ps -aq); fi
-            sudo docker run -d -p 8081:8080 --name ${{ env.SERVICE_NAME }}-${{env.IMAGE_TAG}} ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:${{env.IMAGE_TAG}}
+            
+            # 기존 같은 서비스 이름의 컨테이너만 stop/rm
+            CONTAINER_NAME=$(sudo docker ps -aqf "name=^${{ env.SERVICE_NAME }}")
+
+            if [ "$CONTAINER_NAME" ]; then
+              echo "Stopping and removing existing container: $CONTAINER_NAME"
+              sudo docker stop $CONTAINER_NAME
+              sudo docker rm $CONTAINER_NAME
+            else
+              echo "No existing container to stop/remove"
+            fi
+
+            # 새 컨테이너 실행
+            sudo docker run -d -p 8081:8080 --name ${{ env.SERVICE_NAME }}-${{ env.IMAGE_TAG }} ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:${{env.IMAGE_TAG}}
+
+            # 이미지 정리
             sudo docker image prune -f
           timeout: 30m
