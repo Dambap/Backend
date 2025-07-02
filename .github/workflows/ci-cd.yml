@@ -1,0 +1,97 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Dambap CI-CD
+
+on:
+  push:
+    branches: [ "develop" ]
+
+# 해당 스크립트에서 사용될 환경 변수
+env:
+  ACTIVE_PROFILE: "prod"
+  AWS_REGION: ap-northeast-2
+  SERVICE_NAME: dambap-api
+
+permissions:
+  contents: read
+
+jobs:
+
+  build:
+
+    # Github의 워크플로에서 실행될 OS 선택
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # JDK 17, Corretto 17
+      - name: Set up Corretto JDK  17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Secret Setup - application-prod.yml
+      - name: Inject env-values to application-prod.yml
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/main/resources/config/application-prod.yml
+        env:
+          # Database 환경 변수 주입
+          spring.datasource.url: ${{ secrets.DATASOURCE_URL }}
+          spring.datasource.username: ${{ secrets.DATASOURCE_USERNAME }}
+          spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
+
+      # gradlew 파일 실행권한 설정
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
+      # Gradle build (Test 제외)
+      - name: Build with Gradle
+        run: ./gradlew clean --stacktrace --info build
+        shell: bash
+
+      # Generate Image Tag
+      - name: Make image tag
+        run: echo "IMAGE_TAG=$ACTIVE_PROFILE-${GITHUB_SHA::7}" >> $GITHUB_ENV # activeProfile-커밋 hash 값
+
+      # DockerHub 로그인
+      - name: dockerhub login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      # Docker 이미지 빌드
+      - name: docker image build
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:${{env.IMAGE_TAG}} .
+
+      #  Docker Hub 이미지 푸시
+      - name: dockerHub push
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:${{env.IMAGE_TAG}}
+
+      # Deploy Dambap Service
+      - name: Deploy and Start Spring Boot Application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ec2-user
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            sudo echo "IMAGE_TAG=${{ env.IMAGE_TAG }}" >> .env
+            echo "${{ secrets.DOCKER_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            sudo docker ps
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:${{env.IMAGE_TAG}}
+            if [ $(sudo docker ps -q) ]; then sudo docker stop $(sudo docker ps -q); fi
+            if [ $(sudo docker ps -aq) ]; then sudo docker rm $(sudo docker ps -aq); fi
+            sudo docker run -d -p 8080:8080 --name ${{ env.SERVICE_NAME }}-${{env.IMAGE_TAG}} ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE_NAME }}:${{env.IMAGE_TAG}}
+            sudo docker image prune -f
+          timeout: 30m
