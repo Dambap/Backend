@@ -1,0 +1,34 @@
+spring:
+
+  # DB
+  datasource:
+    url:
+    username:
+    password:
+
+  # ElastiCache
+  data:
+    redis:
+      host:
+      port:
+
+
+cloud:
+
+  # S3
+  aws:
+    credentials:
+      access-key:
+      secret-key:
+    s3:
+      bucket:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+
+logging:
+  level:
+    org.springframework: DEBUG
+    com.zaxxer.hikari: DEBUG
