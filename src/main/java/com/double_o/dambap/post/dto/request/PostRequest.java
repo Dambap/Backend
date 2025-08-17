@@ -2,12 +2,12 @@ package com.double_o.dambap.post.dto.request;
 
 import com.double_o.dambap.post.domain.Category;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
 /**
  * 게시글 등록 dto
@@ -20,7 +20,7 @@ public class PostRequest {
 
     private LocalDate manufactureDate;
 
-    @Max(value = 14)
+    @Range(min = 1, max = 14, message = "expireDays 는 최소 1, 최대 14 까지 가능합니다.")
     private int expireDays;
 
     private String content;
