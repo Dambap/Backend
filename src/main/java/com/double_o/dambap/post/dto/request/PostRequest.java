@@ -2,6 +2,7 @@ package com.double_o.dambap.post.dto.request;
 
 import com.double_o.dambap.post.domain.Category;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +20,7 @@ public class PostRequest {
 
     private LocalDate manufactureDate;
 
+    @Max(value = 14)
     private int expireDays;
 
     private String content;
