@@ -46,6 +46,9 @@ dependencies {
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.7.7'
 
+	// s3
+	implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.0.2'
+
 	// database
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'

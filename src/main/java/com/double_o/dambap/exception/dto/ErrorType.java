@@ -9,6 +9,11 @@ import org.springframework.http.HttpStatus;
 public enum ErrorType {
     CONFLICT_ERROR(HttpStatus.BAD_REQUEST, "예기치 못한 에러가 발생했습니다."),
 
+    // S3 예외
+    EMPTY_IMAGE_ERROR(HttpStatus.BAD_REQUEST, "이미지 파일이 비어있습니다."),
+    IMAGE_UPLOAD_FAILED_ERROR(HttpStatus.BAD_REQUEST, "이미지 업로드에 실패하였습니다."),
+    MEDIA_MAX_SIZE_3_ERROR(HttpStatus.BAD_REQUEST, "미디어는 최대 3개까지 등록 가능합니다."),
+
     // register 예외
     EMAIL_DUPLICATE_ERROR(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
     CONFIRM_PASSWORD_NOT_MATCH_ERROR(HttpStatus.BAD_REQUEST, "패스워드가 확인 패스워드랑 일치하지 않습니다."),
@@ -19,7 +24,6 @@ public enum ErrorType {
 
     //auth 예외
     NON_IDENTICAL_USER_ERROR(HttpStatus.FORBIDDEN, "작성자와 접근자가 일치하지 않습니다."),
-    WRITER_CANNOT_RECOMMEND_ERROR(HttpStatus.FORBIDDEN, "자신의 게시물은 추천할 수 없습니다."),
     USED_ACCESS_TOKEN_ERROR(HttpStatus.FORBIDDEN, "이미 사용된 엑세스 토큰입니다"),
     USED_REFRESH_TOKEN_ERROR(HttpStatus.FORBIDDEN, "이미 사용된 리프레시 토큰입니다"),
     REFRESH_TOKEN_MISMATCH_ERROR(HttpStatus.FORBIDDEN, "엑세스 토큰이 일치하지 않습니다"),
