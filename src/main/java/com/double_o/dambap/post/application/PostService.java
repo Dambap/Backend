@@ -5,14 +5,14 @@ import static com.double_o.dambap.post.utils.TaggedUserConstants.TAGGED_USER_MAX
 import com.double_o.dambap.auth.model.AuthUser;
 import com.double_o.dambap.exception.dto.ErrorType;
 import com.double_o.dambap.exception.post.PostInvalidException;
-import com.double_o.dambap.post.domain.Like;
+import com.double_o.dambap.post.domain.PostLike;
 import com.double_o.dambap.post.domain.Media;
 import com.double_o.dambap.post.domain.TaggedUser;
 import com.double_o.dambap.post.domain.Type;
 import com.double_o.dambap.post.dto.response.PostInfoResponse;
 import com.double_o.dambap.post.dto.response.PostLikeResponse;
 import com.double_o.dambap.post.dto.response.PostPageResponse;
-import com.double_o.dambap.post.infrastructure.LikeRepository;
+import com.double_o.dambap.post.infrastructure.PostLikeRepository;
 import com.double_o.dambap.post.domain.Post;
 import com.double_o.dambap.post.dto.request.PostRequest;
 import com.double_o.dambap.post.dto.response.PostResponse;
@@ -42,7 +42,7 @@ public class PostService {
     private final PostValidationService postValidationService;
     private final UserValidationService userValidationService;
     private final PostRepository postRepository;
-    private final LikeRepository likeRepository;
+    private final PostLikeRepository postLikeRepository;
     private final TaggedUserRepository taggedUserRepository;
     private final MediaRepository mediaRepository;
 
@@ -137,10 +137,10 @@ public class PostService {
 
         Post findPost = postValidationService.getPostOrThrowIfNotExist(postId);
 
-        Optional<Like> like = likeRepository.findByPostIdAndLikerId(
+        Optional<PostLike> postLike = postLikeRepository.findByPostIdAndLikerId(
                 findPost.getId(), findUser.getId());
 
-        updateLikeStatus(like, findPost, findUser);
+        updateLikeStatus(postLike, findPost, findUser);
 
         return PostLikeResponse.toResponse(findPost.getId(), findPost.getLikeCnt());
     }
@@ -269,16 +269,16 @@ public class PostService {
     }
 
     // 기존 추천한 이력 유무에 따른 추천수 증감
-    private void updateLikeStatus(Optional<Like> like, Post findPost, User findUser) {
-        if (like.isEmpty()) {
-            likeRepository.save(Like.builder()
+    private void updateLikeStatus(Optional<PostLike> postLike, Post findPost, User findUser) {
+        if (postLike.isEmpty()) {
+            postLikeRepository.save(PostLike.builder()
                     .likedAt(LocalDate.now())
                     .postId(findPost.getId())
                     .likerId(findUser.getId())
                     .build());
             findPost.increaseRecommendationCnt();
         } else {
-            likeRepository.deleteById(like.get().getId());
+            postLikeRepository.deleteById(postLike.get().getId());
             findPost.decreaseRecommendationCnt();
         }
     }
