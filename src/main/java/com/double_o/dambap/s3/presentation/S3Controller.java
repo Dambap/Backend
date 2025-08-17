@@ -1,6 +1,6 @@
 package com.double_o.dambap.s3.presentation;
 
-import static com.double_o.dambap.post.utils.MediaConstants.MEDIA_MAX_SIZE;
+import static com.double_o.dambap.s3.utils.MediaConstants.MEDIA_MAX_SIZE;
 
 import com.double_o.dambap.common.model.ResponseDto;
 import com.double_o.dambap.exception.dto.ErrorType;
