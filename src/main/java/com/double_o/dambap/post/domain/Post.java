@@ -45,7 +45,6 @@ public class Post extends BaseEntity {
     @Column(name = "writer_id")
     private Long writerId;
 
-    // TODO (필요 없나?)해당 엔티티 내부 필드가 아닌 것(이미지, 태그 정보) 수정 시 연관 테이블 엮여 있는 문제 해결(사용자가 보낸 urls
     public void updatePost(
             Category category,
             LocalDate manufactureDate,
