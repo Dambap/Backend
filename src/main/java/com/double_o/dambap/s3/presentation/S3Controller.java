@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/api/images")
+@RequestMapping(path = "/api/v1/images")
 @RequiredArgsConstructor
 public class S3Controller {
 
