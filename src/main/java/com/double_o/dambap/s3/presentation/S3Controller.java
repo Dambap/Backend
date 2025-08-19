@@ -4,7 +4,6 @@ import static com.double_o.dambap.s3.utils.MediaConstants.MEDIA_MAX_SIZE;
 
 import com.double_o.dambap.common.model.ResponseDto;
 import com.double_o.dambap.exception.dto.ErrorType;
-import com.double_o.dambap.exception.post.PostInvalidException;
 import com.double_o.dambap.exception.s3.S3InvalidException;
 import com.double_o.dambap.s3.application.S3Uploader;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/api/images")
+@RequestMapping(path = "/api/v1/images")
 @RequiredArgsConstructor
 public class S3Controller {
 
@@ -32,25 +31,36 @@ public class S3Controller {
     @PostMapping
     public ResponseEntity<?> uploadImages(@RequestParam("images") List<MultipartFile> images) {
         try {
+            validateEmptyFiles(images);
+            validateMediaMaxSize(images);
+
             List<String> mediaUrls = images.stream()
                     .map(s3Uploader::uploadFile)
                     .toList();
-
-            // 파일이 비었는지 검사
-            if (mediaUrls.isEmpty() || mediaUrls.stream().anyMatch(String::isEmpty)) {
-                throw new S3InvalidException(ErrorType.EMPTY_IMAGE_ERROR);
-            }
-
-            // 미디어 등록은 최대 3개로 제한
-            if (images.size() > MEDIA_MAX_SIZE) {
-                throw new PostInvalidException(ErrorType.MEDIA_MAX_SIZE_3_ERROR);
-            }
 
             log.debug("Successfully uploaded image. URL: {}", mediaUrls.size());
             return ResponseDto.ok(mediaUrls);
         } catch (Exception e) {
             log.error("Failed to upload images", e);
             throw new S3InvalidException(ErrorType.IMAGE_UPLOAD_FAILED_ERROR);
+        }
+    }
+
+
+    /** 파일이 비었는지 검사 */
+    private void validateEmptyFiles(List<MultipartFile> images) {
+        if (images == null || images.isEmpty()) {
+            throw new S3InvalidException(ErrorType.EMPTY_IMAGE_ERROR);
+        }
+        if (images.stream().anyMatch(img -> img.isEmpty() || img.getSize() == 0)) {
+            throw new S3InvalidException(ErrorType.EMPTY_IMAGE_ERROR);
+        }
+    }
+
+    /** 파일 개수 검사 (최대 MEDIA_MAX_SIZE) */
+    private void validateMediaMaxSize(List<MultipartFile> images) {
+        if (images.size() > MEDIA_MAX_SIZE) {
+            throw new S3InvalidException(ErrorType.MEDIA_MAX_SIZE_3_ERROR);
         }
     }
 }
