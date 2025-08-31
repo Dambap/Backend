@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final PostValidationService postValidationService;
     private final UserValidationService userValidationService;
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
@@ -76,10 +75,9 @@ public class PostService {
     /**
      * 게시글 조회
      */
-    @Transactional(readOnly = true)
     public PostResponse getPost(Long postId) {
 
-        Post findPost = postValidationService.getPostOrThrowIfNotExist(postId);
+        Post findPost = getPostOrThrowIfNotExist(postId);
 
         List<String> mediaUrls = getMediaUrls(findPost);
 
@@ -94,7 +92,7 @@ public class PostService {
     @Transactional
     public PostResponse editPost(AuthUser user, Long postId, PostRequest request) {
 
-        Post findPost = postValidationService.getPostOrThrowIfNotExist(postId);
+        Post findPost = getPostOrThrowIfNotExist(postId);
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
@@ -116,7 +114,7 @@ public class PostService {
     @Transactional
     public SuccessResponse deletePost(AuthUser user, Long postId) {
 
-        Post findPost = postValidationService.getPostOrThrowIfNotExist(postId);
+        Post findPost = getPostOrThrowIfNotExist(postId);
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
@@ -135,7 +133,7 @@ public class PostService {
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
-        Post findPost = postValidationService.getPostOrThrowIfNotExist(postId);
+        Post findPost = getPostOrThrowIfNotExist(postId);
 
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndLikerId(
                 findPost.getId(), findUser.getId());
@@ -153,7 +151,7 @@ public class PostService {
 
         userValidationService.getUserOrThrowIfNotExist(user.getId());
 
-        Post findPost = postValidationService.getPostOrThrowIfNotExist(postId);
+        Post findPost = getPostOrThrowIfNotExist(postId);
 
         findPost.changePublicity();
         return new SuccessResponse("공개여부가 성공적으로 전환되었습니다.");
@@ -162,12 +160,11 @@ public class PostService {
     /**
      * 내가 나눈 음식 게시글 목록 최신순으로 반환
      */
-    @Transactional(readOnly = true)
     public PostPageResponse getAllMySharedPost(AuthUser user, Pageable pageable) {
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
-        Page<Post> findAllMySharedPost = postRepository.findAllMySharedPostOrderByCreatedAtDesc(
+        Page<Post> findAllMySharedPost = postRepository.findAllByWriterIdOrderByCreatedAtDesc(
                 findUser.getId(), pageable);
 
         return PostPageResponse.toResponse(
@@ -180,7 +177,7 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public PostPageResponse getAllLatestPost(Pageable pageable) {
-        Page<Post> findAllPosts = postRepository.findAllPostOrderByCreatedAtDesc(
+        Page<Post> findAllPosts = postRepository.findAllByOrderByCreatedAtDesc(
                 pageable);
 
         return PostPageResponse.toResponse(
@@ -256,14 +253,14 @@ public class PostService {
 
     // 게시글 연관 미디어 순서 보장하여 조회
     private List<String> getMediaUrls(Post post) {
-        return mediaRepository.findByPostIdOrderBySequenceAsc(post.getId()).stream()
+        return mediaRepository.findALLByPostIdOrderBySequenceAsc(post.getId()).stream()
                 .map(Media::getMediaUrl)
                 .toList();
     }
 
     // 게시글 연관 태그 순서 보장하여 조회
     private List<Long> getTaggedUserIds(Post post) {
-        return taggedUserRepository.findAllByPostIdOrBOrderBySequenceAsc(post.getId()).stream()
+        return taggedUserRepository.findAllByPostIdOrderBySequenceAsc(post.getId()).stream()
                 .map(TaggedUser::getTaggedUserId)
                 .toList();
     }
@@ -285,8 +282,15 @@ public class PostService {
 
     // 게시글 정보 응답 dto 로 변환
     private PostInfoResponse convertToPostInfoResponse(Post post) {
-        Media thumbnailMedia = mediaRepository.findByPostIdOrderBySequenceAsc(post.getId()).get(0);
+        Media thumbnailMedia = mediaRepository.findALLByPostIdOrderBySequenceAsc(post.getId()).get(0);
         return PostInfoResponse.toResponse(post.getId(), post.getContent(),
                 thumbnailMedia.getMediaUrl());
+    }
+
+    // 게시글 반환, 없으면 예외처리
+    public Post getPostOrThrowIfNotExist(Long postId) {
+        return postRepository.findById(postId).orElseThrow(
+                () -> new PostInvalidException(ErrorType.POST_NOT_FOUND_ERROR)
+        );
     }
 }
