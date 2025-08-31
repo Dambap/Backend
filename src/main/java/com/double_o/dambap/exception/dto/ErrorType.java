@@ -8,6 +8,11 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorType {
     CONFLICT_ERROR(HttpStatus.BAD_REQUEST, "예기치 못한 에러가 발생했습니다."),
+    CNT_NEGATIVE_ERROR(HttpStatus.BAD_REQUEST, "계수는 음수가 될 수 없습니다."),
+
+    // 게시글 예외
+    POST_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id에 해당하는 게시글이 존재하지 않습니다."),
+    TAGGED_USER_MAX_SIZE_20_ERROR(HttpStatus.BAD_REQUEST, "사용자 태그는 최대 20명까지 등록 가능합니다."),
 
     // S3 예외
     EMPTY_IMAGE_ERROR(HttpStatus.BAD_REQUEST, "이미지 파일이 비어있습니다."),
