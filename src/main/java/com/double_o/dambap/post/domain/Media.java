@@ -30,7 +30,7 @@ public class Media {
     @Column(name = "media_url")
     private String mediaUrl;
 
-    @Enumerated
+@Enumerated(EnumType.STRING)
     private Type type;
 
     private int sequence;   // 사용자가 이미지를 보낸 순서
