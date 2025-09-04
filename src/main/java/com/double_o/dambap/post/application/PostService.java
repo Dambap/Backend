@@ -137,6 +137,16 @@ public class PostService {
     }
 
     /**
+     * 게시글 추천 수 조회
+     */
+    public LikeResponse getLikeCnt(Long postId) {
+
+        Post findPost = getPostOrThrowIfNotExist(postId);
+
+        return LikeResponse.toResponse(findPost.getId(), findPost.getLikeCnt());
+    }
+
+    /**
      * 게시글 공개 여부 전환
      */
     @Transactional

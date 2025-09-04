@@ -81,6 +81,15 @@ public class PostController {
         return ResponseDto.ok(response);
     }
 
+    @Operation(summary = "게시글 추천 수 조회")
+    @GetMapping(path = "/{postId}/recommendation")
+    public ResponseEntity<?> getRecommendCnt(
+            @Parameter(description = "게시글 고유 번호")
+            @PathVariable("postId") Long postId) {
+        var response = postService.getLikeCnt(postId);
+        return ResponseDto.ok(response);
+    }
+
     @Operation(summary = "게시글 공개여부 전환")
     @PatchMapping(path = "/{postId}")
     public ResponseEntity<?> changePublicity(
