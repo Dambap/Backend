@@ -30,7 +30,7 @@ public class SharePostController {
 
     @Operation(summary = "게시글 생성")
     @PostMapping
-    public ResponseEntity<?> createQuestion(
+    public ResponseEntity<?> createSharePost(
             AuthUser user,
             @Parameter(required = true, description = "게시글 생성 요청")
             @RequestBody @Valid PostRequest request) {
@@ -40,7 +40,7 @@ public class SharePostController {
 
     @Operation(summary = "게시글 조회")
     @GetMapping(path = "/{postId}")
-    public ResponseEntity<?> readQuestion(
+    public ResponseEntity<?> readSharePost(
             @Parameter(description = "게시글 고유 번호")
             @PathVariable("postId") Long postId) {
         var response = postService.getPost(postId);
@@ -49,7 +49,7 @@ public class SharePostController {
 
     @Operation(summary = "게시글 수정")
     @PutMapping(path = "/{postId}")
-    public ResponseEntity<?> updateQuestion(
+    public ResponseEntity<?> updateSharePost(
             AuthUser user,
             @Parameter(description = "게시글 고유 번호")
             @PathVariable("postId") Long postId,
@@ -61,7 +61,7 @@ public class SharePostController {
 
     @Operation(summary = "게시글 삭제")
     @DeleteMapping(path = "/{postId}")
-    public ResponseEntity<?> deleteQuestion(
+    public ResponseEntity<?> deleteSharePost(
             AuthUser user,
             @Parameter(description = "게시글 고유 번호")
             @PathVariable("postId") Long postId
@@ -72,7 +72,7 @@ public class SharePostController {
 
     @Operation(summary = "게시글 추천")
     @PostMapping(path = "/{postId}/recommendation")
-    public ResponseEntity<?> recommendQuestion(
+    public ResponseEntity<?> recommendSharePost(
             AuthUser user,
             @Parameter(description = "게시글 고유 번호")
             @PathVariable("postId") Long postId
@@ -94,7 +94,7 @@ public class SharePostController {
 
     @Operation(summary = "내가 나눈 음식 게시글 목록 조회")
     @GetMapping(path = "/all-my-shared-post")
-    public ResponseEntity<?> getAllMySharedPost(
+    public ResponseEntity<?> getAllMySharePost(
             AuthUser user,
             @Parameter(description = "한 페이지의 데이터 개수")
             @PageableDefault(size = 12) Pageable pageable
