@@ -3,7 +3,7 @@ package com.double_o.dambap.post.application;
 import com.double_o.dambap.auth.model.AuthUser;
 import com.double_o.dambap.exception.dto.ErrorType;
 import com.double_o.dambap.exception.post.PostInvalidException;
-import com.double_o.dambap.like.application.LikeService;
+import com.double_o.dambap.recommendation.application.RecommendService;
 import com.double_o.dambap.media.Media;
 import com.double_o.dambap.post.domain.Post;
 import com.double_o.dambap.post.domain.TaggedUser;
@@ -14,7 +14,7 @@ import com.double_o.dambap.post.dto.response.PostPageResponse;
 import com.double_o.dambap.post.dto.response.PostResponse;
 import com.double_o.dambap.post.infrastructure.PostRepository;
 import com.double_o.dambap.post.infrastructure.TaggedUserRepository;
-import com.double_o.dambap.like.dto.response.LikeResponse;
+import com.double_o.dambap.recommendation.dto.response.RecommendResponse;
 import com.double_o.dambap.media.MediaRepository;
 import com.double_o.dambap.auth.service.AuthValidationUtils;
 import com.double_o.dambap.post.utils.TaggedUserConstants;
@@ -39,7 +39,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final TaggedUserRepository taggedUserRepository;
     private final MediaRepository mediaRepository;
-    private final LikeService likeService;
+    private final RecommendService recommendService;
 
     /**
      * 게시글 등록
@@ -55,7 +55,7 @@ public class PostService {
                 .expireDays(request.getExpireDays())
                 .content(request.getContent())
                 .isPublic(request.isPublic())
-                .likeCnt(0)
+                .recommendationCnt(0)
                 .writerId(findUser.getId())
                 .build();
 
@@ -125,25 +125,25 @@ public class PostService {
      * 게시글 좋아요
      */
     @Transactional
-    public LikeResponse updatePostLike(AuthUser user, Long postId) {
+    public RecommendResponse updatePostRecommendStatus(AuthUser user, Long postId) {
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
         Post findPost = getPostOrThrowIfNotExist(postId);
 
-        likeService.updateLikeStatus(findPost, findUser, Type.POST);
+        recommendService.updateRecommendStatus(findPost, findUser, Type.POST);
 
-        return LikeResponse.toResponse(findPost.getId(), findPost.getLikeCnt());
+        return RecommendResponse.toResponse(findPost.getId(), findPost.getRecommendationCnt());
     }
 
     /**
      * 게시글 추천 수 조회
      */
-    public LikeResponse getLikeCnt(Long postId) {
+    public RecommendResponse getRecommendationCnt(Long postId) {
 
         Post findPost = getPostOrThrowIfNotExist(postId);
 
-        return LikeResponse.toResponse(findPost.getId(), findPost.getLikeCnt());
+        return RecommendResponse.toResponse(findPost.getId(), findPost.getRecommendationCnt());
     }
 
     /**
@@ -208,7 +208,7 @@ public class PostService {
                 mediaUrls,
                 taggedUserIds,
                 post.isPublic(),
-                post.getLikeCnt(),
+                post.getRecommendationCnt(),
                 post.getWriterId()
         );
     }

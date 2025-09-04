@@ -77,7 +77,7 @@ public class PostController {
             @Parameter(description = "게시글 고유 번호")
             @PathVariable("postId") Long postId
     ) {
-        var response = postService.updatePostLike(user, postId);
+        var response = postService.updatePostRecommendStatus(user, postId);
         return ResponseDto.ok(response);
     }
 
@@ -86,7 +86,7 @@ public class PostController {
     public ResponseEntity<?> getRecommendCnt(
             @Parameter(description = "게시글 고유 번호")
             @PathVariable("postId") Long postId) {
-        var response = postService.getLikeCnt(postId);
+        var response = postService.getRecommendationCnt(postId);
         return ResponseDto.ok(response);
     }
 

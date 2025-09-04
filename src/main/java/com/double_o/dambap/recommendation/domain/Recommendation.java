@@ -1,4 +1,4 @@
-package com.double_o.dambap.like.domain;
+package com.double_o.dambap.recommendation.domain;
 
 import com.double_o.dambap.post.domain.Type;
 import jakarta.persistence.Column;
@@ -19,31 +19,31 @@ import lombok.NoArgsConstructor;
 @Entity
 // 조회 성능을 위한 JPA 이용 인덱스 추가
 @Table(
-        name = "like",
+        name = "recommendation",
         indexes = {
-                @Index(name = "idx_like_targetid", columnList = "target_id"),
-                @Index(name = "idx_like_likerid", columnList = "liker_id"),
-                @Index(name = "uq_like_targetid_likerid", columnList = "target_id, liker_id", unique = true)
+                @Index(name = "idx_recommendation_targetid", columnList = "target_id"),
+                @Index(name = "idx_recommendation_recommenderid", columnList = "recommender_id"),
+                @Index(name = "uq_recommendation_targetid_recommenderid", columnList = "target_id, recommender_id", unique = true)
         }
 )
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
-public class Like {
+public class Recommendation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "liked_at")
-    private LocalDate likedAt;
+    @Column(name = "recommended_at")
+    private LocalDate recommendedAt;
 
     @Column(name = "target_id")
     private Long targetId;
 
-    @Column(name = "liker_id")
-    private Long likerId;
+    @Column(name = "recommender_id")
+    private Long recommenderId;
 
     @Enumerated(EnumType.STRING)
     private Type type;
