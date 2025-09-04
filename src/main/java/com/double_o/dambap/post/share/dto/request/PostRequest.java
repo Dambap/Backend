@@ -1,6 +1,6 @@
-package com.double_o.dambap.post.dto.request;
+package com.double_o.dambap.post.share.dto.request;
 
-import com.double_o.dambap.post.domain.Category;
+import com.double_o.dambap.post.share.domain.Category;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;

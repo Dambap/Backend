@@ -1,6 +1,5 @@
-package com.double_o.dambap.post.infrastructure;
+package com.double_o.dambap.post.like;
 
-import com.double_o.dambap.post.domain.PostLike;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

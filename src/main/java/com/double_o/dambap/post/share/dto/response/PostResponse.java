@@ -1,6 +1,6 @@
-package com.double_o.dambap.post.dto.response;
+package com.double_o.dambap.post.share.dto.response;
 
-import com.double_o.dambap.post.domain.Category;
+import com.double_o.dambap.post.share.domain.Category;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

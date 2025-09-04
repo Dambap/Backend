@@ -1,7 +1,9 @@
-package com.double_o.dambap.post.domain;
+package com.double_o.dambap.post.media;
 
+import com.double_o.dambap.post.share.domain.Type;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,7 +32,7 @@ public class Media {
     @Column(name = "media_url")
     private String mediaUrl;
 
-@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private Type type;
 
     private int sequence;   // 사용자가 이미지를 보낸 순서

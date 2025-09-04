@@ -1,7 +1,10 @@
-package com.double_o.dambap.post.domain;
+package com.double_o.dambap.post.like;
 
+import com.double_o.dambap.post.share.domain.Type;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,4 +45,7 @@ public class PostLike {
 
     @Column(name = "liker_id")
     private Long likerId;
+
+    @Enumerated(EnumType.STRING)
+    private Type type;
 }

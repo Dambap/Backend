@@ -1,4 +1,4 @@
-package com.double_o.dambap.post.domain;
+package com.double_o.dambap.post.share.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,9 +1,9 @@
-package com.double_o.dambap.post.presentation;
+package com.double_o.dambap.post.share.presentation;
 
 import com.double_o.dambap.auth.model.AuthUser;
 import com.double_o.dambap.common.model.ResponseDto;
-import com.double_o.dambap.post.application.PostService;
-import com.double_o.dambap.post.dto.request.PostRequest;
+import com.double_o.dambap.post.share.application.SharePostService;
+import com.double_o.dambap.post.share.dto.request.PostRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/api/v1/posts/shared")
 @RequiredArgsConstructor
-public class PostController {
+public class SharePostController {
 
-    private final PostService postService;
+    private final SharePostService postService;
 
     @Operation(summary = "게시글 생성")
     @PostMapping

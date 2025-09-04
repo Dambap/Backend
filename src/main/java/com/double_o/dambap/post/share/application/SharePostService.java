@@ -1,25 +1,25 @@
-package com.double_o.dambap.post.application;
+package com.double_o.dambap.post.share.application;
 
-import static com.double_o.dambap.post.utils.TaggedUserConstants.TAGGED_USER_MAX_SIZE;
+import static com.double_o.dambap.post.share.utils.TaggedUserConstants.TAGGED_USER_MAX_SIZE;
 
 import com.double_o.dambap.auth.model.AuthUser;
 import com.double_o.dambap.exception.dto.ErrorType;
 import com.double_o.dambap.exception.post.PostInvalidException;
-import com.double_o.dambap.post.domain.PostLike;
-import com.double_o.dambap.post.domain.Media;
-import com.double_o.dambap.post.domain.TaggedUser;
-import com.double_o.dambap.post.domain.Type;
-import com.double_o.dambap.post.dto.response.PostInfoResponse;
-import com.double_o.dambap.post.dto.response.PostLikeResponse;
-import com.double_o.dambap.post.dto.response.PostPageResponse;
-import com.double_o.dambap.post.infrastructure.PostLikeRepository;
-import com.double_o.dambap.post.domain.Post;
-import com.double_o.dambap.post.dto.request.PostRequest;
-import com.double_o.dambap.post.dto.response.PostResponse;
-import com.double_o.dambap.post.infrastructure.MediaRepository;
-import com.double_o.dambap.post.infrastructure.PostRepository;
+import com.double_o.dambap.post.like.PostLike;
+import com.double_o.dambap.post.media.Media;
+import com.double_o.dambap.post.share.domain.TaggedUser;
+import com.double_o.dambap.post.share.domain.Type;
+import com.double_o.dambap.post.share.dto.response.PostInfoResponse;
+import com.double_o.dambap.post.like.PostLikeResponse;
+import com.double_o.dambap.post.share.dto.response.PostPageResponse;
+import com.double_o.dambap.post.like.PostLikeRepository;
+import com.double_o.dambap.post.share.domain.SharePost;
+import com.double_o.dambap.post.share.dto.request.PostRequest;
+import com.double_o.dambap.post.share.dto.response.PostResponse;
+import com.double_o.dambap.post.media.MediaRepository;
+import com.double_o.dambap.post.share.infrastructure.SharePostRepository;
 import com.double_o.dambap.auth.service.AuthValidationUtils;
-import com.double_o.dambap.post.infrastructure.TaggedUserRepository;
+import com.double_o.dambap.post.share.infrastructure.TaggedUserRepository;
 import com.double_o.dambap.user.domain.User;
 import com.double_o.dambap.user.application.UserValidationService;
 import com.double_o.dambap.common.dto.SuccessResponse;
@@ -37,10 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PostService {
+public class SharePostService {
 
     private final UserValidationService userValidationService;
-    private final PostRepository postRepository;
+    private final SharePostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final TaggedUserRepository taggedUserRepository;
     private final MediaRepository mediaRepository;
@@ -53,7 +53,7 @@ public class PostService {
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
-        Post post = Post.builder()
+        SharePost post = SharePost.builder()
                 .category(request.getCategory())
                 .manufactureDate(request.getManufactureDate())
                 .expireDays(request.getExpireDays())
@@ -63,7 +63,7 @@ public class PostService {
                 .writerId(findUser.getId())
                 .build();
 
-        Post savedPost = postRepository.save(post);
+        SharePost savedPost = postRepository.save(post);
 
         List<String> mediaUrls = saveAndGetMediaUrls(request, savedPost);
 
@@ -77,7 +77,7 @@ public class PostService {
      */
     public PostResponse getPost(Long postId) {
 
-        Post findPost = getPostOrThrowIfNotExist(postId);
+        SharePost findPost = getPostOrThrowIfNotExist(postId);
 
         List<String> mediaUrls = getMediaUrls(findPost);
 
@@ -92,13 +92,13 @@ public class PostService {
     @Transactional
     public PostResponse editPost(AuthUser user, Long postId, PostRequest request) {
 
-        Post findPost = getPostOrThrowIfNotExist(postId);
+        SharePost findPost = getPostOrThrowIfNotExist(postId);
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
         AuthValidationUtils.verifySameUser(findUser.getId(), findPost.getWriterId());
 
-        findPost.updatePost(request.getCategory(), request.getManufactureDate(),
+        findPost.updateSharePost(request.getCategory(), request.getManufactureDate(),
                 request.getExpireDays(), request.getContent(), request.isPublic());
 
         List<String> mediaUrls = saveAndGetMediaUrls(request, findPost);
@@ -114,7 +114,7 @@ public class PostService {
     @Transactional
     public SuccessResponse deletePost(AuthUser user, Long postId) {
 
-        Post findPost = getPostOrThrowIfNotExist(postId);
+        SharePost findPost = getPostOrThrowIfNotExist(postId);
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
@@ -133,7 +133,7 @@ public class PostService {
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
-        Post findPost = getPostOrThrowIfNotExist(postId);
+        SharePost findPost = getPostOrThrowIfNotExist(postId);
 
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndLikerId(
                 findPost.getId(), findUser.getId());
@@ -151,7 +151,7 @@ public class PostService {
 
         userValidationService.getUserOrThrowIfNotExist(user.getId());
 
-        Post findPost = getPostOrThrowIfNotExist(postId);
+        SharePost findPost = getPostOrThrowIfNotExist(postId);
 
         findPost.changePublicity();
         return new SuccessResponse("공개여부가 성공적으로 전환되었습니다.");
@@ -164,7 +164,7 @@ public class PostService {
 
         User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
 
-        Page<Post> findAllMySharedPost = postRepository.findAllByWriterIdOrderByCreatedAtDesc(
+        Page<SharePost> findAllMySharedPost = postRepository.findAllByWriterIdOrderByCreatedAtDesc(
                 findUser.getId(), pageable);
 
         return PostPageResponse.toResponse(
@@ -177,7 +177,7 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public PostPageResponse getAllLatestPost(Pageable pageable) {
-        Page<Post> findAllPosts = postRepository.findAllByOrderByCreatedAtDesc(
+        Page<SharePost> findAllPosts = postRepository.findAllByOrderByCreatedAtDesc(
                 pageable);
 
         return PostPageResponse.toResponse(
@@ -187,7 +187,7 @@ public class PostService {
 
 
     // 게시글 응답 형변환
-    private PostResponse getPostResponse(Post post, List<String> mediaUrls,
+    private PostResponse getPostResponse(SharePost post, List<String> mediaUrls,
             List<Long> taggedUserIds) {
         return PostResponse.toResponse(
                 post.getId(),
@@ -206,7 +206,7 @@ public class PostService {
     }
 
     // 게시글 생성 및 수정 시 미디어 등록
-    private List<String> saveAndGetMediaUrls(PostRequest request, Post targetPost) {
+    private List<String> saveAndGetMediaUrls(PostRequest request, SharePost targetPost) {
 
         // 기존 등록된 게시글 관련 미디어 전부 삭제
         mediaRepository.deleteAllByPostId(targetPost.getId());
@@ -227,7 +227,7 @@ public class PostService {
     }
 
     // 게시글 생성 및 수정 시 태그 등록
-    private List<Long> saveAndGetTaggedUserIds(PostRequest request, Post targetPost) {
+    private List<Long> saveAndGetTaggedUserIds(PostRequest request, SharePost targetPost) {
 
         // 사용자 태그를 20명으로 제한
         if (request.getTaggedUserIds().size() > TAGGED_USER_MAX_SIZE) {
@@ -252,21 +252,21 @@ public class PostService {
     }
 
     // 게시글 연관 미디어 순서 보장하여 조회
-    private List<String> getMediaUrls(Post post) {
+    private List<String> getMediaUrls(SharePost post) {
         return mediaRepository.findALLByPostIdOrderBySequenceAsc(post.getId()).stream()
                 .map(Media::getMediaUrl)
                 .toList();
     }
 
     // 게시글 연관 태그 순서 보장하여 조회
-    private List<Long> getTaggedUserIds(Post post) {
+    private List<Long> getTaggedUserIds(SharePost post) {
         return taggedUserRepository.findAllByPostIdOrderBySequenceAsc(post.getId()).stream()
                 .map(TaggedUser::getTaggedUserId)
                 .toList();
     }
 
     // 기존 추천한 이력 유무에 따른 추천수 증감
-    private void updateLikeStatus(Optional<PostLike> postLike, Post findPost, User findUser) {
+    private void updateLikeStatus(Optional<PostLike> postLike, SharePost findPost, User findUser) {
         if (postLike.isEmpty()) {
             postLikeRepository.save(PostLike.builder()
                     .likedAt(LocalDate.now())
@@ -281,14 +281,14 @@ public class PostService {
     }
 
     // 게시글 정보 응답 dto 로 변환
-    private PostInfoResponse convertToPostInfoResponse(Post post) {
+    private PostInfoResponse convertToPostInfoResponse(SharePost post) {
         Media thumbnailMedia = mediaRepository.findALLByPostIdOrderBySequenceAsc(post.getId()).get(0);
         return PostInfoResponse.toResponse(post.getId(), post.getContent(),
                 thumbnailMedia.getMediaUrl());
     }
 
     // 게시글 반환, 없으면 예외처리
-    public Post getPostOrThrowIfNotExist(Long postId) {
+    public SharePost getPostOrThrowIfNotExist(Long postId) {
         return postRepository.findById(postId).orElseThrow(
                 () -> new PostInvalidException(ErrorType.POST_NOT_FOUND_ERROR)
         );
