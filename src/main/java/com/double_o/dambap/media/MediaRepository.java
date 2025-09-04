@@ -1,6 +1,5 @@
-package com.double_o.dambap.post.infrastructure;
+package com.double_o.dambap.media;
 
-import com.double_o.dambap.post.domain.Media;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -10,7 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface MediaRepository extends JpaRepository<Media, Long> {
 
-    void deleteAllByPostId(Long postId);
+    void deleteAllByTargetId(Long postId);
 
-    List<Media> findALLByPostIdOrderBySequenceAsc(Long postId);
+    void deleteByTargetId(Long targetId);
+
+    List<Media> findALLByTargetIdOrderBySequenceAsc(Long postId);
+
+    Media findByTargetId(Long postId);
 }

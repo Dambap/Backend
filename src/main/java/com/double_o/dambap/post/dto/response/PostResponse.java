@@ -24,7 +24,7 @@ public class PostResponse {
     private List<String> mediaUrls;
     private List<Long> taggedUserIds;
     private boolean isPublic;
-    private int likeCnt;
+    private int recommendationCnt;
     private Long writerId;
 
     public static PostResponse toResponse(
@@ -38,10 +38,10 @@ public class PostResponse {
             List<String> mediaUrls,
             List<Long> taggedUserIds,
             boolean isPublic,
-            int likeCnt,
+            int recommendationCnt,
             Long writerId
     ) {
         return new PostResponse(id, createdAt, modifiedAt, category, manufactureDate, expireDays,
-                content, mediaUrls, taggedUserIds, isPublic, likeCnt, writerId);
+                content, mediaUrls, taggedUserIds, isPublic, recommendationCnt, writerId);
     }
 }
