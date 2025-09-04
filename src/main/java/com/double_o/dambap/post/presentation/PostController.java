@@ -93,7 +93,7 @@ public class PostController {
     }
 
     @Operation(summary = "내가 나눈 음식 게시글 목록 조회")
-    @GetMapping(path = "/all-my-shared-post")
+    @GetMapping(path = "/all-my-posts")
     public ResponseEntity<?> getAllMySharePost(
             AuthUser user,
             @Parameter(description = "한 페이지의 데이터 개수")
@@ -104,7 +104,7 @@ public class PostController {
     }
 
     @Operation(summary = "전체 나눈 음식 게시글 목록 조회")
-    @GetMapping(path = "/all-latest-post")
+    @GetMapping(path = "/all-latest-posts")
     public ResponseEntity<?> getAllLatestPost(
             @Parameter(description = "한 페이지의 데이터 개수")
             @PageableDefault(size = 12) Pageable pageable

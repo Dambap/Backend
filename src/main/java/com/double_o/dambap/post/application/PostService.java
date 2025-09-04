@@ -179,6 +179,7 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public PostPageResponse getAllLatestPost(Pageable pageable) {
+
         Page<Post> findAllPosts = postRepository.findAllByOrderByCreatedAtDesc(
                 pageable);
 
@@ -191,6 +192,7 @@ public class PostService {
     // 게시글 응답 형변환
     private PostResponse getPostResponse(Post post, List<String> mediaUrls,
             List<Long> taggedUserIds) {
+
         return PostResponse.toResponse(
                 post.getId(),
                 post.getCreatedAt(),
@@ -255,6 +257,7 @@ public class PostService {
 
     // 게시글 연관 미디어 순서 보장하여 조회
     private List<String> getMediaUrls(Post post) {
+
         return mediaRepository.findALLByTargetIdOrderBySequenceAsc(post.getId()).stream()
                 .map(Media::getMediaUrl)
                 .toList();
@@ -262,6 +265,7 @@ public class PostService {
 
     // 게시글 연관 태그 순서 보장하여 조회
     private List<Long> getTaggedUserIds(Post post) {
+
         return taggedUserRepository.findAllByPostIdOrderBySequenceAsc(post.getId()).stream()
                 .map(TaggedUser::getTaggedUserId)
                 .toList();
@@ -269,6 +273,7 @@ public class PostService {
 
     // 기존 추천한 이력 유무에 따른 추천수 증감
     private void updateLikeStatus(Optional<Like> like, Post findPost, User findUser) {
+
         if (like.isEmpty()) {
             LikeRepository.save(Like.builder()
                     .likedAt(LocalDate.now())
@@ -285,6 +290,7 @@ public class PostService {
 
     // 게시글 정보 응답 dto 로 변환
     private PostInfoResponse convertToPostInfoResponse(Post post) {
+
         Media thumbnailMedia = mediaRepository.findALLByTargetIdOrderBySequenceAsc(post.getId())
                 .get(0);
         return PostInfoResponse.toResponse(post.getId(), post.getContent(),
@@ -293,6 +299,7 @@ public class PostService {
 
     // 게시글 반환, 없으면 예외처리
     public Post getPostOrThrowIfNotExist(Long postId) {
+
         return postRepository.findById(postId).orElseThrow(
                 () -> new PostInvalidException(ErrorType.POST_NOT_FOUND_ERROR)
         );
