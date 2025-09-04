@@ -14,6 +14,9 @@ public enum ErrorType {
     POST_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "id에 해당하는 게시글이 존재하지 않습니다."),
     TAGGED_USER_MAX_SIZE_20_ERROR(HttpStatus.BAD_REQUEST, "사용자 태그는 최대 20명까지 등록 가능합니다."),
 
+    // 리뷰 예외
+    NOT_TAGGED_USER_ERROR(HttpStatus.BAD_REQUEST, "원 게시글에 태그되지 않은 사용자입니다."),
+
     // S3 예외
     EMPTY_IMAGE_ERROR(HttpStatus.BAD_REQUEST, "이미지 파일이 비어있습니다."),
     IMAGE_UPLOAD_FAILED_ERROR(HttpStatus.BAD_REQUEST, "이미지 업로드에 실패하였습니다."),
