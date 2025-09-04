@@ -3,6 +3,7 @@ package com.double_o.dambap.post.domain;
 import com.double_o.dambap.common.entity.BaseEntity;
 import com.double_o.dambap.exception.dto.ErrorType;
 import com.double_o.dambap.exception.post.PostInvalidException;
+import com.double_o.dambap.recommendation.common.Recommendable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-public class Post extends BaseEntity {
+public class Post extends BaseEntity implements Recommendable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,8 +39,8 @@ public class Post extends BaseEntity {
     private boolean isPublic;
 
     // cnt 정보
-    @Column(name = "like_cnt")
-    private int likeCnt;
+    @Column(name = "recommendation_cnt", nullable = false)
+    private int recommendationCnt = 0;
 
     // 참조 정보
     @Column(name = "writer_id")
@@ -58,13 +59,15 @@ public class Post extends BaseEntity {
         this.isPublic = isPublic;
     }
 
+    @Override
     public void increaseRecommendationCnt() {
-        this.likeCnt++;
+        this.recommendationCnt++;
     }
 
+    @Override
     public void decreaseRecommendationCnt() {
-        if (this.likeCnt > 0) {
-            this.likeCnt--;
+        if (this.recommendationCnt > 0) {
+            this.recommendationCnt--;
         } else {
             throw new PostInvalidException(ErrorType.CNT_NEGATIVE_ERROR);
         }
