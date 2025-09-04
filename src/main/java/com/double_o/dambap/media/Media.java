@@ -26,8 +26,8 @@ public class Media {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "post_id")
-    private Long postId;
+    @Column(name = "target_id")
+    private Long targetId;
 
     @Column(name = "media_url")
     private String mediaUrl;

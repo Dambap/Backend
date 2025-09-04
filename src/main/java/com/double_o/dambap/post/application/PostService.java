@@ -148,11 +148,14 @@ public class PostService {
     @Transactional
     public SuccessResponse changePublicity(AuthUser user, Long postId) {
 
-        userValidationService.getUserOrThrowIfNotExist(user.getId());
-
         Post findPost = getPostOrThrowIfNotExist(postId);
 
+        User findUser = userValidationService.getUserOrThrowIfNotExist(user.getId());
+
+        AuthValidationUtils.verifySameUser(findUser.getId(), findPost.getWriterId());
+
         findPost.changePublicity();
+
         return new SuccessResponse("공개여부가 성공적으로 전환되었습니다.");
     }
 
@@ -208,12 +211,12 @@ public class PostService {
     private List<String> saveAndGetMediaUrls(PostRequest request, Post targetPost) {
 
         // 기존 등록된 게시글 관련 미디어 전부 삭제
-        mediaRepository.deleteAllByPostId(targetPost.getId());
+        mediaRepository.deleteAllByTargetId(targetPost.getId());
 
         // request 에서 받아온 미디어 목록에 시퀀스 반영(오름차순), 순서 보장하여 저장, 리스트로 가공하여 반환
         List<Media> medias = IntStream.range(0, request.getMediaUrls().size())
                 .mapToObj(i -> Media.builder()
-                        .postId(targetPost.getId())
+                        .targetId(targetPost.getId())
                         .mediaUrl(request.getMediaUrls().get(i))
                         .type(Type.POST)
                         .sequence(i)    // 순서 정보 부여
@@ -252,7 +255,7 @@ public class PostService {
 
     // 게시글 연관 미디어 순서 보장하여 조회
     private List<String> getMediaUrls(Post post) {
-        return mediaRepository.findALLByPostIdOrderBySequenceAsc(post.getId()).stream()
+        return mediaRepository.findALLByTargetIdOrderBySequenceAsc(post.getId()).stream()
                 .map(Media::getMediaUrl)
                 .toList();
     }
@@ -282,7 +285,7 @@ public class PostService {
 
     // 게시글 정보 응답 dto 로 변환
     private PostInfoResponse convertToPostInfoResponse(Post post) {
-        Media thumbnailMedia = mediaRepository.findALLByPostIdOrderBySequenceAsc(post.getId())
+        Media thumbnailMedia = mediaRepository.findALLByTargetIdOrderBySequenceAsc(post.getId())
                 .get(0);
         return PostInfoResponse.toResponse(post.getId(), post.getContent(),
                 thumbnailMedia.getMediaUrl());
