@@ -9,7 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface MediaRepository extends JpaRepository<Media, Long> {
 
-    void deleteAllByPostId(Long postId);
+    void deleteAllByTargetId(Long postId);
 
-    List<Media> findALLByPostIdOrderBySequenceAsc(Long postId);
+    void deleteByTargetId(Long targetId);
+
+    List<Media> findALLByTargetIdOrderBySequenceAsc(Long postId);
+
+    Media findByTargetId(Long postId);
 }
