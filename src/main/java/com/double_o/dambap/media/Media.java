@@ -1,6 +1,6 @@
-package com.double_o.dambap.post.media;
+package com.double_o.dambap.media;
 
-import com.double_o.dambap.post.share.domain.Type;
+import com.double_o.dambap.post.domain.Type;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

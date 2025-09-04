@@ -1,4 +1,4 @@
-package com.double_o.dambap.post.share.dto.response;
+package com.double_o.dambap.post.dto.response;
 
 import java.util.List;
 

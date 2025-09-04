@@ -1,9 +1,9 @@
-package com.double_o.dambap.post.share.presentation;
+package com.double_o.dambap.post.presentation;
 
 import com.double_o.dambap.auth.model.AuthUser;
 import com.double_o.dambap.common.model.ResponseDto;
-import com.double_o.dambap.post.share.application.SharePostService;
-import com.double_o.dambap.post.share.dto.request.PostRequest;
+import com.double_o.dambap.post.dto.request.PostRequest;
+import com.double_o.dambap.post.application.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api/v1/posts/shared")
+@RequestMapping(path = "/api/v1/posts")
 @RequiredArgsConstructor
-public class SharePostController {
+public class PostController {
 
-    private final SharePostService postService;
+    private final PostService postService;
 
     @Operation(summary = "게시글 생성")
     @PostMapping
@@ -99,7 +99,7 @@ public class SharePostController {
             @Parameter(description = "한 페이지의 데이터 개수")
             @PageableDefault(size = 12) Pageable pageable
     ) {
-        var response = postService.getAllMySharedPost(user, pageable);
+        var response = postService.getAllMyPost(user, pageable);
         return ResponseDto.ok(response);
     }
 

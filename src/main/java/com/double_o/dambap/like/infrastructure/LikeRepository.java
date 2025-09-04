@@ -1,5 +1,6 @@
-package com.double_o.dambap.post.like;
+package com.double_o.dambap.like.infrastructure;
 
+import com.double_o.dambap.like.domain.Like;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -7,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional(readOnly = true)
-public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
+public interface LikeRepository extends JpaRepository<Like, Long> {
 
-    Optional<PostLike> findByPostIdAndLikerId(Long postId, Long likerId);
+    Optional<Like> findByPostIdAndLikerId(Long postId, Long likerId);
 }

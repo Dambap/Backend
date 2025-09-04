@@ -1,4 +1,4 @@
-package com.double_o.dambap.post.share.domain;
+package com.double_o.dambap.post.domain;
 
 import com.double_o.dambap.common.entity.BaseEntity;
 import com.double_o.dambap.exception.dto.ErrorType;
@@ -16,12 +16,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "share_post")
+@Table(name = "post")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
-public class SharePost extends BaseEntity {
+public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +45,7 @@ public class SharePost extends BaseEntity {
     @Column(name = "writer_id")
     private Long writerId;
 
-    public void updateSharePost(
+    public void updatePost(
             Category category,
             LocalDate manufactureDate,
             int expireDays,

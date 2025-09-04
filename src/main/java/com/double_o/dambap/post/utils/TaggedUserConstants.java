@@ -1,4 +1,4 @@
-package com.double_o.dambap.post.share.utils;
+package com.double_o.dambap.post.utils;
 
 public class TaggedUserConstants {
 
