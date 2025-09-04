@@ -1,5 +1,6 @@
 package com.double_o.dambap.recommendation.infrastructure;
 
+import com.double_o.dambap.post.domain.Type;
 import com.double_o.dambap.recommendation.domain.Recommendation;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,5 +11,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface RecommendRepository extends JpaRepository<Recommendation, Long> {
 
-    Optional<Recommendation> findByTargetIdAndRecommenderId(Long targetId, Long recommenderId);
+    Optional<Recommendation> findByTargetIdAndRecommenderIdAndType(Long targetId, Long recommenderId, Type type);
 }

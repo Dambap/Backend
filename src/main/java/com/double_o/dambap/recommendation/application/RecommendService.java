@@ -19,8 +19,8 @@ public class RecommendService {
     // 기존 추천한 이력 유무에 따른 추천수 증감
     public <T extends Recommendable> void updateRecommendStatus(T target, User findUser, Type type) {
 
-        Optional<Recommendation> recommendation = recommendRepository.findByTargetIdAndRecommenderId(
-                target.getId(), findUser.getId());
+        Optional<Recommendation> recommendation = recommendRepository.findByTargetIdAndRecommenderIdAndType(
+                target.getId(), findUser.getId(), type);
 
         if (recommendation.isPresent()) {
             recommendRepository.deleteById(recommendation.get().getId());

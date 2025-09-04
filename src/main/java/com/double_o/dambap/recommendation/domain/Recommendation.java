@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
         indexes = {
                 @Index(name = "idx_recommendation_targetid", columnList = "target_id"),
                 @Index(name = "idx_recommendation_recommenderid", columnList = "recommender_id"),
-                @Index(name = "uq_recommendation_targetid_recommenderid", columnList = "target_id, recommender_id", unique = true)
+                @Index(name = "uq_recommendation_targetid_recommenderid_type", columnList = "target_id, recommender_id, type", unique = true)
         }
 )
 @NoArgsConstructor
