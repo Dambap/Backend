@@ -3,7 +3,7 @@ package com.double_o.dambap.post.application;
 import com.double_o.dambap.auth.model.AuthUser;
 import com.double_o.dambap.exception.dto.ErrorType;
 import com.double_o.dambap.exception.post.PostInvalidException;
-import com.double_o.dambap.like.domain.Like;
+import com.double_o.dambap.like.application.LikeService;
 import com.double_o.dambap.media.Media;
 import com.double_o.dambap.post.domain.Post;
 import com.double_o.dambap.post.domain.TaggedUser;
@@ -15,7 +15,6 @@ import com.double_o.dambap.post.dto.response.PostResponse;
 import com.double_o.dambap.post.infrastructure.PostRepository;
 import com.double_o.dambap.post.infrastructure.TaggedUserRepository;
 import com.double_o.dambap.like.dto.response.LikeResponse;
-import com.double_o.dambap.like.infrastructure.LikeRepository;
 import com.double_o.dambap.media.MediaRepository;
 import com.double_o.dambap.auth.service.AuthValidationUtils;
 import com.double_o.dambap.post.utils.TaggedUserConstants;
@@ -24,9 +23,7 @@ import com.double_o.dambap.user.application.UserValidationService;
 import com.double_o.dambap.common.dto.SuccessResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,9 +37,9 @@ public class PostService {
 
     private final UserValidationService userValidationService;
     private final PostRepository postRepository;
-    private final LikeRepository LikeRepository;
     private final TaggedUserRepository taggedUserRepository;
     private final MediaRepository mediaRepository;
+    private final LikeService likeService;
 
     /**
      * 게시글 등록
@@ -134,10 +131,7 @@ public class PostService {
 
         Post findPost = getPostOrThrowIfNotExist(postId);
 
-        Optional<Like> like = LikeRepository.findByPostIdAndLikerId(
-                findPost.getId(), findUser.getId());
-
-        updateLikeStatus(like, findPost, findUser);
+        likeService.updateLikeStatus(findPost, findUser, Type.POST);
 
         return LikeResponse.toResponse(findPost.getId(), findPost.getLikeCnt());
     }
@@ -269,23 +263,6 @@ public class PostService {
         return taggedUserRepository.findAllByPostIdOrderBySequenceAsc(post.getId()).stream()
                 .map(TaggedUser::getTaggedUserId)
                 .toList();
-    }
-
-    // 기존 추천한 이력 유무에 따른 추천수 증감
-    private void updateLikeStatus(Optional<Like> like, Post findPost, User findUser) {
-
-        if (like.isEmpty()) {
-            LikeRepository.save(Like.builder()
-                    .likedAt(LocalDate.now())
-                    .targetId(findPost.getId())
-                    .likerId(findUser.getId())
-                    .type(Type.POST)
-                    .build());
-            findPost.increaseRecommendationCnt();
-        } else {
-            LikeRepository.deleteById(like.get().getId());
-            findPost.decreaseRecommendationCnt();
-        }
     }
 
     // 게시글 정보 응답 dto 로 변환

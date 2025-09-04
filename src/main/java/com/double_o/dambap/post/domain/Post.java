@@ -3,6 +3,7 @@ package com.double_o.dambap.post.domain;
 import com.double_o.dambap.common.entity.BaseEntity;
 import com.double_o.dambap.exception.dto.ErrorType;
 import com.double_o.dambap.exception.post.PostInvalidException;
+import com.double_o.dambap.like.common.Likeable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-public class Post extends BaseEntity {
+public class Post extends BaseEntity implements Likeable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,11 +59,13 @@ public class Post extends BaseEntity {
         this.isPublic = isPublic;
     }
 
-    public void increaseRecommendationCnt() {
+    @Override
+    public void increaseLikeCnt() {
         this.likeCnt++;
     }
 
-    public void decreaseRecommendationCnt() {
+    @Override
+    public void decreaseLikeCnt() {
         if (this.likeCnt > 0) {
             this.likeCnt--;
         } else {

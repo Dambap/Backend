@@ -10,5 +10,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
-    Optional<Like> findByPostIdAndLikerId(Long postId, Long likerId);
+    Optional<Like> findByTargetIdAndLikerId(Long targetId, Long likerId);
 }
